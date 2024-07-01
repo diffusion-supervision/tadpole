@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Large-scale pretrained text-conditioned diffusion models enable the zero-shot learning of text-conditioned policies.">
+  <meta name="keywords" content="TADPoLe, Diffusion, Policies">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Text-Aware Diffusion for Policy Learning</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- Favicon edited from Yu luck (https://thenounproject.com/yuluck/)-->
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script src="./static/js/index.js"></script>
+  <!-- <script>
+    $(function() {
+        $('#includedContent').load('goal_carousel.html');
+    });
+  </script> -->
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Text-Aware Diffusion for Policy Learning</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://calvinyluo.com">Calvin Luo</a>,</span>
+            <span class="author-block">
+              <a href="https://www.mandyhe.com">Mandy He</a>*,</span>
+            <span class="author-block">
+              <a href="https://zilaiz.github.io/">Zilai Zeng</a>*,</span>
+            <span class="author-block">
+              <a href="https://chensun.me">Chen Sun</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Brown University</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/TADPoLes"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section abstract">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            In this work, we present Text-Aware Diffusion for Policy Learning (TADPoLe), which utilizes a large-scale pretrained, frozen, text-conditioned diffusion model to generate a dense reward signal for policy learning.
+            We demonstrate that TADPoLe enables the zero-shot learning of policies that are flexibly and accurately conditioned on natural language inputs, across different robot configurations and environments, for both goal-achievement and continuous locomotion tasks.
+               Furthermore, we observe that behaviors learned through TADPoLe are qualitatively appealing due to alignment with natural priors summarized from large-scale pretraining.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!--/ Best Results Carousel. -->
+    <section class="hero is-light is-small">
+      <div class="hero-body">
+        <div class="container">
+          <div class=" is-centered has-text-centered">
+            <h2 class="results-carousel-title title is-3">TADPoLe Results</h2>
+          </div>
+          <div id="best-results-carousel" class="best-results-carousel results-carousel"> 
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_dog_standing/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog standing"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/continuous_locomotion/a_person_walking/Video-TADPoLe.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person walking"</h3>
+                <h3 class="subtitle type">Video-TADPoLe</h3>
+              </div>
+            </div>
+
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing_with_hands_above_head.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing with hands above head"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing_with_hands_on_hips.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing with hands on hips"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/continuous_locomotion/a_person_walking/Image-TADPoLe.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person walking"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_doing_splits/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person doing splits"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_kneeling/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person kneeling"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_in_lotus_position/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person in lotus position"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/drawer_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a drawer"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/drawer_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a drawer"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/continuous_locomotion/a_dog_walking/Video-TADPoLe.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog walking"</h3>
+                <h3 class="subtitle type">Video-TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/continuous_locomotion/a_dog_walking/Image-TADPoLe.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog walking"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/window_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a window"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/soccer.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"pushing a soccer ball into the net"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--/ Best Results Carousel. -->
+    
+    <!--/ Pipeline Image. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="pipeline column is-four-fifths">
+        <h2 class="title is-3">Pipeline</h2>
+        <div class="pipeline-img">
+          <img src="tadpol_iceberg.png" alt="Pipeline of TADPoLe">
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            An illustration of the TADPoLe pipeline, which computes text-conditioned rewards for policy learning through a pretrained, frozen diffusion model.
+            At each timestep, the subsequent frame is rendered through the environment and corrupted with a sampled Gaussian source noise vector.  
+            The diffusion model is then used to predict the source noise that was added, conditioned on a desired text prompt.
+            The reward is designed to be large when the selected action produces frames well-aligned with the text prompt.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="is-centered has-text-centered">
+      <h2 class="title is-3">Experiments</h2>
+      <div class="content has-text-justified">
+        <p>
+          We perform comprehensive experiments to demonstrate the ability of TADPoLe to learn a variety of novel behaviors directly from text conditioning, 
+          across a host of different robotic state configurations and visual environments.  
+          We apply TADPoLe to both goal-achieving tasks, such as striking a particular pose, as well as continuous locomotion tasks; we showcase these results on the Dog and Humanoid environments from the DeepMind Control Suite, both of which are known to be advanced in difficulty due to their large action space and complex transition dynamics.
+          We also demonstrate performance of TADPoLe on robotic manipulation tasks from the MetaWorld suite.
+        </p>
+      </div>
+    </div>
+    <!--/ Goal Achievement Carousel. -->
+    <section class="hero is-light is-small">
+      <div class="hero-body">
+        <div class="container">
+          <!-- <div class="is-centered has-text-centered">
+          </div> -->
+          <h2 class="subtitle-4by4 title is-size-5">Goal Achievement</h2>
+          <div class="content has-text-justified">
+            <p>
+              We showcase text-conditioned goal-reaching tasks learned via TADPoLe, for both Dog and Humanoid environments, and compare it against other text-to-reward approaches.  
+              TADPoLe is able to successfully learn a variety of behaviors, from standing upright to doing splits to kneeling. 
+            </p>
+          </div>
+          <div id="results-carousel" class="carousel results-carousel">
+            
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_doing_splits/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person doing splits"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_doing_splits/clip.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person doing splits"</h3>
+                <h3 class="subtitle type">CLIP</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_doing_splits/liv.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person doing splits"</h3>
+                <h3 class="subtitle type">LIV</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="natural_dog" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_doing_splits/txt2reward.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person doing splits"</h3>
+                <h3 class="subtitle type">Txt2Reward</h3>
+              </div>
+            </div>
+            <!-- Dog ----------- Dog---------------- Dog-------------- Dog------------ Dog--- -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_dog_standing/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog standing"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_dog_standing/clip.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog standing"</h3>
+                <h3 class="subtitle type">CLIP</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_dog_standing/liv.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog standing"</h3>
+                <h3 class="subtitle type">LIV</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="natural_dog" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_dog_standing/txt2reward.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a dog standing"</h3>
+                <h3 class="subtitle type">Txt2Reward</h3>
+              </div>
+            </div>
+            <!-- FINISH Dog ----------- Dog---------------- Dog-------------- Dog------------ Dog--- -->
+            <!-- Kneeling ----------- Kneeling---------------- Kneeling-------------- Kneeling------------ Kneeling--- -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_kneeling/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person kneeling"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_kneeling/clip.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person kneeling"</h3>
+                <h3 class="subtitle type">CLIP</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_kneeling/liv.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person kneeling"</h3>
+                <h3 class="subtitle type">LIV</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="natural_dog" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_kneeling/txt2reward.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person kneeling"</h3>
+                <h3 class="subtitle type">Txt2Reward</h3>
+              </div>
+            </div>
+            <!-- FINISH Kneeling ----------- Kneeling---------------- Kneeling-------------- Kneeling------------ Kneeling--- -->
+            <!-- Lotus ----------- Lotus---------------- Lotus-------------- Lotus------------ Lotus--- -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_in_lotus_position/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person in lotus position"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_in_lotus_position/clip.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person in lotus position"</h3>
+                <h3 class="subtitle type">CLIP</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_in_lotus_position/liv.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person in lotus position"</h3>
+                <h3 class="subtitle type">LIV</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="natural_dog" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_in_lotus_position/txt2reward.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person in lotus position"</h3>
+                <h3 class="subtitle type">Txt2Reward</h3>
+              </div>
+            </div>
+            <!-- FINISH Lotus ----------- Lotus---------------- Lotus-------------- Lotus------------ Lotus--- -->
+            <!-- Standing ----------- Standing---------------- Standing-------------- Standing------------ Standing--- -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_standing/tadpol.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_standing/clip.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing"</h3>
+                <h3 class="subtitle type">CLIP</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_standing/liv.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing"</h3>
+                <h3 class="subtitle type">LIV</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="natural_dog" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/goal_achievement/a_person_standing/txt2reward.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"a person standing"</h3>
+                <h3 class="subtitle type">Txt2Reward</h3>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--/ Goal Achievement Carousel. -->
+
+    <!--/ Locomotion Carousel. -->
+
+    <section class="hero is-light is-small">
+      <div class="hero-body">
+          <div class="container">
+            <h2 class="subtitle-4by4 title is-size-5">Continuous Locomotion</h2>
+            <div class="content has-text-justified">
+              <p>
+                We further explore the ability of TADPoLe to learn continuous locomotion behaviors conditioned on natural language specifications.
+                Such tasks are often difficult to learn purely from static external description, as there is no canonical pose or goal frame that if reached, would denote successful achievement of the task.
+                We propose Video-TADPoLe, which leverages large-scale pretrained text-to-video generative models, as a promising direction forward, and demonstrate how it outperforms using a language-video alignment model (ViCLIP) instead.
+              </p>
+            </div>
+
+            <!-- VIDEO ----VIDEO --VIDEO ----VIDEO --VIDEO ----VIDEO --VIDEO ----VIDEO --VIDEO ----VIDEO --VIDEO ----VIDEO --VIDEO ----VIDEO -->
+            <div id="locomotion-carousel" class="locomotion-carousel results-carousel">
+              
+              <div class="item item-steve has-background">
+                <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_person_walking/Video-TADPoLe.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a person walking"</h3>
+                  <h3 class="subtitle type">Video-TADPoLe</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_person_walking/ViCLIP.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a person walking"</h3>
+                  <h3 class="subtitle type">ViCLIP-RM</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_person_walking/VLM-RM.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a person walking"</h3>
+                  <h3 class="subtitle type">VLM-RM</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_person_walking/LIV.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a person walking"</h3>
+                  <h3 class="subtitle type">LIV</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_person_walking/Text2Reward.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a person walking"</h3>
+                  <h3 class="subtitle type">Text2Reward</h3>
+                </div>
+              </div>
+              <!-- FINISH a_person_walking ---------- a_person_walking -------  a_person_walking  ---------- a_person_walking -------  a_person_walking -->
+              <!-- a_dog_walking ---------- a_dog_walking -------  a_dog_walking  ---------- a_dog_walking -------  a_dog_walking -->
+              <div class="item item-steve has-background">
+                <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_dog_walking/Video-TADPoLe.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a dog walking"</h3>
+                  <h3 class="subtitle type">Video-TADPoLe</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_dog_walking/ViCLIP-RM.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a dog walking"</h3>
+                  <h3 class="subtitle type">ViCLIP-RM</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_dog_walking/VLM-RM.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a dog walking"</h3>
+                  <h3 class="subtitle type">VLM-RM</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_dog_walking/LIV.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a dog walking"</h3>
+                  <h3 class="subtitle type">LIV</h3>
+                </div>
+              </div>
+              <div class="item item-steve has-background">
+                <video poster="" id="human_walk" autoplay controls muted loop playsinline height="100%">
+                  <source src="./static/videos/continuous_locomotion/a_dog_walking/Text2Reward.mp4"
+                          type="video/mp4">
+                </video>
+                <div class="has-text-centered">
+                  <h3 class="subtitle prompt">"a dog walking"</h3>
+                  <h3 class="subtitle type">Text2Reward</h3>
+                </div>
+              </div>
+
+            </div>
+            <!-- FINISH a_dog_walking ---------- a_dog_walking -------  a_dog_walking  ---------- a_dog_walking -------  a_dog_walking -->
+          </div>
+      </div>
+    </section>
+    <!--/ Locomotion Carousel. -->
+
+    <!--/ Metaworld Carousel. -->
+    <section class="hero is-light is-small">
+      <div class="hero-body">
+        <div class="container">
+          <!-- <div class="is-centered has-text-centered">
+          </div> -->
+          <h2 class="subtitle-4by4 title is-size-5">Robotic Manipulation</h2>
+          <div class="content has-text-justified">
+            <p>
+              We investigate how well TADPoLe can be applied to learn robotic manipulation tasks through dense text-conditioned feedback.  
+              We do so by replacing the manually-designed ground-truth dense reward for each Meta-World task with TADPoLe's text-conditioned reward.
+              We perform thorough comparisons between TADPoLe and VLM-RM by evaluating them on a diverse set of selected Meta-World tasks, 
+              in which we observe that TADPoLe provides meaningful zero-shot dense supervision that enables success across a variety of robotic 
+              manipulation tasks through text-conditioning. 
+            </p>
+          </div>
+          <div id="results-carousel" class="carousel results-carousel">
+            
+            <!-- drawer_open_close ---------- drawer_open_close -------  drawer_open_close  ---------- drawer_open_close -------  drawer_open_close -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/drawer_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a drawer"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/drawer_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a drawer"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/drawer_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a drawer"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/drawer_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a drawer"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <!-- FINISH drawer_open_close ---------- drawer_open_close -------  drawer_open_close  ---------- drawer_open_close -------  drawer_open_close -->
+            
+            <!-- window_open_close ---------- window_open_close -------  window_open_close  ---------- window_open_close -------  window_open_close -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/window_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a window"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/window_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a window"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/window_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a window"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/window_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a window"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <!-- FINISH drawer_open_close ---------- drawer_open_close -------  drawer_open_close  ---------- drawer_open_close -------  drawer_open_close -->
+            <!-- door_open_close ---------- door_open_close -------  door_open_close  ---------- door_open_close -------  door_open_close -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/door_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a door"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/door_close.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"closing a door"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/door_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a door"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/door_open.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"opening a door"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <!-- FINISH door_open_close ---------- door_open_close -------  door_open_close  ---------- door_open_close -------  door_open_close -->
+            <!-- random ---------- random -------  random  ---------- random -------  random -->
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/soccer.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"pushing a soccer ball into the net"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/soccer.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"pushing a soccer ball into the net"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="standing" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/tadpole/lever_pull.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"pulling a lever"</h3>
+                <h3 class="subtitle type">TADPoLe</h3>
+              </div>
+            </div>
+            <div class="item item-steve has-background">
+              <video poster="" id="walking" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/metaworld_videos/vlm-rm/lever_pull.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle prompt">"pulling a lever"</h3>
+                <h3 class="subtitle type">VLM-RM</h3>
+              </div>
+            </div>
+            <!-- FINISH drawer_open_close ---------- drawer_open_close -------  drawer_open_close  ---------- drawer_open_close -------  drawer_open_close -->
+          
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <!--/ Metaworld Carousel. -->
+
+    
+
+    <!--/ Pipeline Image. -->
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="is-centered has-text-centered">
+          <h2 class="title is-3">Prompt Sensitivity</h2>
+          <div id="prompt-sensitivity-text" class="content has-text-justified">
+            <p>
+              We explore whether or not TADPoLe is sensitive to subtle variations of the input prompt.  
+              We therefore change the conditioning phrase from "a person standing" to "a person standing with hands above head", and observe that the person indeed endeavours to hold their hands above their head.  
+              We also showcase results for the prompt of "a person standing with hands on hips", and demonstrate that the resulting policy indeed learns a humanoid that seeks to place their hands on their hips.  
+              We take this as evidence that TADPoLe is capable of respecting fine-grained details and subtleties of the input prompts when learning text-conditioned policies.
+            </p>
+          </div>
+            <div class="video-container">
+              <div >
+              <video poster="" class="prompt-sensitivity-video " autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle type small">"a person standing"</h3>
+              </div>
+            </div>
+            <div >
+              <video poster="" class="prompt-sensitivity-video " autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing_with_hands_above_head.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle type small">"a person standing with hands above head"</h3>
+              </div>
+            </div>
+            <div >
+              <video poster="" class="prompt-sensitivity-video " autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/Prompt Sensitivity/a_person_standing_with_hands_on_hips.mp4"
+                        type="video/mp4">
+              </video>
+              <div class="has-text-centered">
+                <h3 class="subtitle type small">"a person standing with hands on hips"</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--/ Pipeline Image. -->
+
+    
+  </div>
+</div>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{luo2024tadpole,
+      title={Text-Aware Diffusion for Policy Learning},
+      author={Calvin Luo and Mandy He and Zilai Zeng and Chen Sun},
+      journal={arxiv}, 
+      year={2024},
+     }</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    </div>
+    <div class="columns is-centered">
+      <!-- <div class="column is-8"> -->
+        <div class="content">
+          <!-- <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p> -->
+          <!-- <p>
+            This means you are free to borrow the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p> -->
+          <p>
+            This website licensed under a <a rel="license"
+            href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a> and is based on this  <a
+            href="https://github.com/nerfies/nerfies.github.io">source code</a>.
+          </p>
+        </div>
+      <!-- </div> -->
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
